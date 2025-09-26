@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'poppins',sans-serif;
+        }
+       body{
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        min-height: 100vh;
+        margin-top: 30px;
+        background-color: white;
+       }
+       .chat-container{
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        background-color: rgb(201, 204, 207);
+        width: 400px;
+        height: 600px;
+        border-radius: 10px;
+        transition: 0.3s ease;
+        box-shadow:6px 7px 9px;
+       }
+       .chat-container:hover{
+        transform: translateY(-10px);
+       }
+       .chat-header{
+        display: block;
+        background-color: green;
+        border-radius: 10px 10px 0px 0px;
+        padding: 10px;
+        color: rgb(255, 250, 250);
+        text-align: center;
+       }
+       .message{
+        background-color: rgb(161, 165, 157);
+        padding: 10px 15px;
+        margin: 10px;
+        border-radius: 0px 15px 15px 15px;
+        word-wrap: break-word;
+        max-width: 90%;
+        display: inline-block;
+        align-self: flex-start;
+        box-shadow: 5px 5px 9px black;
+        position: relative;
+    
+       }
+       .time-stamp {
+        display: block;
+        font-size: 10px;
+        color: black;
+        margin-top: 5px;
+        text-align: right;
+       }
+       .chat-message{
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+        flex: 1;
+        overflow: auto;
+       }
+       .chat-input{
+        background-color: rgb(117, 112, 112);
+        padding: 10px;
+        border-radius: 0px 0px 10px 10px;
+       }
+       #user-input{
+        font-size: 20px;
+        border: none;
+        width: 80%;
+        padding: 5px;
+        outline: none;
+        border-radius: 5px;
+       }
+       #send-button{
+            font-size: 20px;
+            padding: 5px 10px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #send-button:hover{
+            background-color: rgb(205, 241, 156);
+            color: black;
+        }
+        .user-message{
+            background-color: rgb(106, 202, 106);
+            color: rgb(10, 10, 10);
+            margin-left: auto;
+            border-radius: 10px 10px 0px 10px;
+        }
+    
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-header">
+        <h1>AI Chatbot</h1>
+    </div>
+    <div class="chat-message" id="chat-message">
+        <div class="message bot-message">
+            <p>Hello! I'm your AI assistance, How can I help you today</p>
+            <span class="time-stamp"></span>
+        </div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type your message here....." autofocus>
+        <button type="submit" id="send-button">Send</button>
+
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const chatmessage = document.getElementById('chat-message');
+    const userinput = document.getElementById('user-input');
+    const sendbutton = document.getElementById('send-button');
+
+    // 🔹 Replace with your Gemini API key
+    const API_KEY = "AIzaSyBzGgERx4CnDLBRwWdQ8Whd6WKQ8exepx4";
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+    // Predefined responses
+    const botresponses = {
+        hello: "Hello! How can I help you today?",
+        hi: "Hi there! How are you?",
+        "how are you": "I'm doing well, thank you! How about you?",
+        "what can i do": "I can answer simple questions and have basic conversations.",
+        bye: "Goodbye! Have a great day!",
+        fine:"That's sound good! Anything else?",
+        default: null // if no match → fallback to AI
+    };
+ // Stop action
+    function stopAll() {
+        speechSynthesis.cancel(); // stop speaking
+        if (currentAbortController) {
+            currentAbortController.abort(); // stop API request
+            currentAbortController = null;
+        }
+        addmessage("⏹️ Stopped generating & speaking", false);
+    }
+    // Function to format time
+    function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleString(); // includes date & time
+    }
+
+    // Function to add message to the chat
+    function addmessage(message, isUser = false, isThinking = false) {
+        const messagediv = document.createElement("div");
+        messagediv.classList.add('message', isUser ? "user-message" : "bot-message");
+        if (isThinking) messagediv.classList.add("thinking");
+
+        const messagetext = document.createElement('p');
+        messagetext.classList.add("message-text");
+        messagetext.textContent = message;
+
+        const timestamp = document.createElement('span');
+        timestamp.classList.add('time-stamp');
+        timestamp.textContent = getCurrentTime();
+
+        messagediv.appendChild(messagetext);
+        messagediv.appendChild(timestamp);
+
+        chatmessage.appendChild(messagediv);
+        chatmessage.scrollTop = chatmessage.scrollHeight;
+        return messagediv; // so AI can update it later
+    }
+
+    // Function to get the bot response
+    function getbotresponse(usermessage) {
+        const lowermessage = usermessage.toLowerCase().trim();
+
+        // Clear chat feature
+        if (lowermessage === "clear") {
+            chatmessage.innerHTML = ""; 
+            addmessage("Chat cleared ✅", false);
+            return null; 
+        }
+
+        // Time feature
+        if (lowermessage === "time") {
+            return "⏰ Current Date & Time: " + getCurrentTime();
+        }
+     if (lowermessage === "stop") {
+            stopAll();
+            return null;
+        }
+        // Rule-based responses
+        for (const [key, value] of Object.entries(botresponses)) {
+            if (lowermessage.includes(key)) {
+                return value;
+            }
+        }
+        return botresponses.default; // null → fallback to AI
+    }
+
+    // 🔹 AI Response via Gemini API
+    const generateBotResponse = async (incomingMessageDiv, userMessage) => {
+        const messageElement = incomingMessageDiv.querySelector(".message-text");
+
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: userMessage }] }]
+            })
+        };
+
+        try {
+            const response = await fetch(API_URL, requestOptions);
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error?.message || "API request failed");
+
+            const apiResponseText = data.candidates[0].content.parts[0].text
+                .replace(/\*\*(.*?)\*\*/g, "$1")
+                .trim();
+
+            messageElement.textContent = apiResponseText;
+            speak(apiResponseText);
+
+        } catch(error) {
+            console.log(error);
+            messageElement.textContent = "❌ Sorry, I encountered an error. Please try again.";
+        } finally {
+            incomingMessageDiv.classList.remove("thinking");
+        }
+    };
+// Function to make the bot speak
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";  // You can change to "ta-IN" for Tamil, etc.
+    utterance.rate = 1;        // Speed (0.5 = slow, 1 = normal, 1.5 = fast)
+    utterance.pitch = 1;       // Tone (0 = low, 2 = high)
+    speechSynthesis.speak(utterance);
+}
+
+    // Function to handle sending messages
+    function sendmessage() {
+        const message = userinput.value.trim();
+        if (message) {
+            addmessage(message, true);
+            userinput.value = "";
+
+            setTimeout(() => {
+                const botresponse = getbotresponse(message);
+                if (botresponse) {
+                    addmessage(botresponse);
+                    speak(botresponse)
+                } else {
+                    // AI fallback
+                    const thinkingDiv = addmessage("Thinking...", false, true);
+                    generateBotResponse(thinkingDiv, message);
+                }
+            }, 500);
+        }
+    }
+
+    sendbutton.addEventListener('click', sendmessage);
+
+    userinput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            sendmessage();
+        }
+    });
+
+    // Add timestamp to initial bot message
+    const firstMsg = document.querySelector('.bot-message .time-stamp');
+    if (firstMsg) firstMsg.textContent = getCurrentTime();
+});
+</script>
+
+</body>
+</html>
