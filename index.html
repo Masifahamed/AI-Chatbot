@@ -1,172 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot</title>
-    <style>
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'poppins',sans-serif;
-        }
-       body{
-        display: flex;
-        justify-content: center;
-        text-align: center;
-        min-height: 100vh;
-        margin-top: 30px;
-        background-color: white;
-       }
-       .chat-container{
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-        background-color: rgb(201, 204, 207);
-        width: 400px;
-        height: 600px;
-        border-radius: 10px;
-        transition: 0.3s ease;
-        box-shadow:6px 7px 9px;
-       }
-       .chat-container:hover{
-        transform: translateY(-10px);
-       }
-       .chat-header{
-        display: block;
-        background-color: green;
-        border-radius: 10px 10px 0px 0px;
-        padding: 10px;
-        color: rgb(255, 250, 250);
-        text-align: center;
-       }
-       .message{
-        background-color: rgb(161, 165, 157);
-        padding: 10px 15px;
-        margin: 10px;
-        border-radius: 0px 15px 15px 15px;
-        word-wrap: break-word;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0">
+  <title>AI Chatbot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: rgb(88, 207, 197);
+      padding: 10px;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      background-color: rgb(201, 204, 207);
+      width: 100%;
+      max-width: 400px;
+      height: 80vh;
+      max-height: 600px;
+      border-radius: 10px;
+      transition: 0.3s ease;
+      box-shadow: 6px 7px 9px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-container:hover {
+      transform: translateY(-5px);
+    }
+
+    .chat-header {
+      display: flex;
+      flex-direction: row;
+      background-color: green;
+      border-radius: 10px 10px 0 0;
+      padding: 10px;
+      color: white;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    .chat-message {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .message-row {
+      display: flex;
+      align-items: flex-start;
+      margin: 8px 0;
+    }
+
+    .chatbot-avatar {
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .message {
+      background-color: rgb(161, 165, 157);
+      padding: 10px 15px;
+      border-radius: 0 15px 15px 15px;
+      word-wrap: break-word;
+      max-width: 70%;
+      box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+      font-size: 0.95rem;
+    }
+
+    .user-message {
+      background-color: rgb(106, 202, 106);
+      color: rgb(10, 10, 10);
+      margin-left: auto;
+      border-radius: 10px 10px 0 10px;
+    }
+
+    .message-text {
+      display: inline-block;
+    }
+.bot-message{
+  display: inline-block;
+  padding: 10px;
+}
+    .time-stamp {
+      display: block;
+      font-size: 0.7rem;
+      color: black;
+      margin-top: 3px;
+      text-align: right;
+    }
+
+    h1 {
+      padding-top: 5px;
+      padding-left: 15px;
+    }
+
+    .chat-input {
+      background-color: rgb(117, 112, 112);
+      padding: 10px;
+      border-radius: 0 0 10px 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-header .chatbot-logo {
+      border-radius: 100%;
+      background-color: white;
+    }
+.chatbot-logo{
+    background-color: rgb(18, 176, 204);
+    border-radius: 100%;
+}
+    #user-input {
+      font-size: 1rem;
+      border: none;
+      flex: 1;
+      padding: 8px;
+      outline: none;
+      border-radius: 5px;
+    }
+
+    #send-button {
+      font-size: 1rem;
+      padding: 8px 15px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #send-button:hover {
+      background-color: rgb(205, 241, 156);
+      color: black;
+    }
+
+    /* Thinking dots animation */
+    .thinking-indicator {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: #333;
+      border-radius: 50%;
+      animation: blink 0.4s infinite;
+    }
+
+    .dot:nth-child(1) { animation-delay: 0.2s;
+    
+     }
+    .dot:nth-child(2) { animation-delay: 0.3s;
+     }
+    .dot:nth-child(3){
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0%,100% { 
+        transform: translateY(0);
+        opacity: 0.7; }
+      50% { 
+        transform: translateY(-4px);
+        opacity: 1; }
+    }
+
+    /* 📱 Mobile screens */
+    @media screen and (max-width: 480px) {
+      .chat-container {
+        width: 100%;
+        height: 85vh;
+        margin: 0;
+        border-radius: 0;
+      }
+
+      .chat-header {
+        font-size: 1rem;
+      }
+
+      #user-input {
+        font-size: 0.9rem;
+      }
+
+      #send-button {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+    }
+
+    /* 📲 Tablets */
+    @media screen and (max-width: 768px) {
+      .chat-container {
         max-width: 90%;
-        display: inline-block;
-        align-self: flex-start;
-        box-shadow: 5px 5px 9px black;
-        position: relative;
-    
-       }
-       .time-stamp {
-        display: block;
-        font-size: 10px;
-        color: black;
-        margin-top: 5px;
-        text-align: right;
-       }
-       .chat-message{
-        display: flex;
-        flex-direction: column;
-        padding: 5px;
-        flex: 1;
-        overflow: auto;
-       }
-       .chat-input{
-        background-color: rgb(117, 112, 112);
-        padding: 10px;
-        border-radius: 0px 0px 10px 10px;
-       }
-       #user-input{
-        font-size: 20px;
-        border: none;
-        width: 80%;
-        padding: 5px;
-        outline: none;
-        border-radius: 5px;
-       }
-       #send-button{
-            font-size: 20px;
-            padding: 5px 10px;
-            background-color: green;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        #send-button:hover{
-            background-color: rgb(205, 241, 156);
-            color: black;
-        }
-        .user-message{
-            background-color: rgb(106, 202, 106);
-            color: rgb(10, 10, 10);
-            margin-left: auto;
-            border-radius: 10px 10px 0px 10px;
-        }
-    
-    </style>
+        height: 80vh;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="chat-container">
+  <div class="chat-container">
     <div class="chat-header">
-        <h1>AI Chatbot</h1>
+      <svg xmlns="http://www.w3.org/2000/svg" class="chatbot-logo" width="50" height="50" viewBox="0 0 1024 1024">
+        <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+      </svg>
+      <h1>AI Chatbot</h1>
     </div>
     <div class="chat-message" id="chat-message">
-        <div class="message bot-message">
-            <p>Hello! I'm your AI assistance, How can I help you today</p>
-            <span class="time-stamp"></span>
+      <div class="message-row">
+        <div class="chatbot-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" class="chatbot-logo" width="50" height="50" viewBox="0 0 1024 1024">
+            <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+            </svg>
         </div>
+        <div class="message bot-message">
+          <p>Hey There 👏 How can I help you today?</p>
+          <span class="time-stamp"></span>
+        </div>
+      </div>
     </div>
     <div class="chat-input">
-        <input type="text" id="user-input" placeholder="Type your message here....." autofocus>
-        <button type="submit" id="send-button">Send</button>
-
+      <input type="text" id="user-input" placeholder="Type your message here....." autofocus>
+      <button type="submit" id="send-button">Send</button>
     </div>
-</div>
+  </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const chatmessage = document.getElementById('chat-message');
+      const userinput = document.getElementById('user-input');
+      const sendbutton = document.getElementById('send-button');
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const chatmessage = document.getElementById('chat-message');
-    const userinput = document.getElementById('user-input');
-    const sendbutton = document.getElementById('send-button');
+      const API_KEY = "AIzaSyBzGgERx4CnDLBRwWdQ8Whd6WKQ8exepx4"; 
+      const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
-    // 🔹 Replace with your Gemini API key
-    const API_KEY = "AIzaSyBzGgERx4CnDLBRwWdQ8Whd6WKQ8exepx4";
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-
-    // Predefined responses
-    const botresponses = {
+      const botresponses = {
         hello: "Hello! How can I help you today?",
+        "nothing":"ok if anything else what can i do for you",
         hi: "Hi there! How are you?",
         "how are you": "I'm doing well, thank you! How about you?",
         "what can i do": "I can answer simple questions and have basic conversations.",
         bye: "Goodbye! Have a great day!",
-        fine:"That's sound good! Anything else?",
-        default: null // if no match → fallback to AI
-    };
- // Stop action
-    function stopAll() {
-        speechSynthesis.cancel(); // stop speaking
-        if (currentAbortController) {
-            currentAbortController.abort(); // stop API request
-            currentAbortController = null;
-        }
-        addmessage("⏹️ Stopped generating & speaking", false);
-    }
-    // Function to format time
-    function getCurrentTime() {
-        const now = new Date();
-        return now.toLocaleString(); // includes date & time
-    }
+        "who are you":"I am AI Speak Chatbot created by you. How can I help you today?",
+        "tell about yourself":"Ok, I am a large language model, my name is Massy. I have no emotions and feelings. I am here to assist you. This is a short introduction about me.",
+        default: null
+      };
 
-    // Function to add message to the chat
-    function addmessage(message, isUser = false, isThinking = false) {
+      function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleString();
+      }
+
+      function addmessage(message, isUser = false, isThinking = false) {
+        const row = document.createElement("div");
+        row.classList.add("message-row");
+
+        if (!isUser) {
+          const avatar = document.createElement("div");
+          avatar.classList.add("chatbot-avatar");
+  
+          avatar.innerHTML = `
+           <svg xmlns="http://www.w3.org/2000/svg" class="chatbot-logo" width="50" height="50" viewBox="0 0 1024 1024">
+            <path d="M738.3 287.6H285.7c-59 0-106.8 47.8-106.8 106.8v303.1c0 59 47.8 106.8 106.8 106.8h81.5v111.1c0 .7.8 1.1 1.4.7l166.9-110.6 41.8-.8h117.4l43.6-.4c59 0 106.8-47.8 106.8-106.8V394.5c0-59-47.8-106.9-106.8-106.9zM351.7 448.2c0-29.5 23.9-53.5 53.5-53.5s53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5-53.5-23.9-53.5-53.5zm157.9 267.1c-67.8 0-123.8-47.5-132.3-109h264.6c-8.6 61.5-64.5 109-132.3 109zm110-213.7c-29.5 0-53.5-23.9-53.5-53.5s23.9-53.5 53.5-53.5 53.5 23.9 53.5 53.5-23.9 53.5-53.5 53.5zM867.2 644.5V453.1h26.5c19.4 0 35.1 15.7 35.1 35.1v121.1c0 19.4-15.7 35.1-35.1 35.1h-26.5zM95.2 609.4V488.2c0-19.4 15.7-35.1 35.1-35.1h26.5v191.3h-26.5c-19.4 0-35.1-15.7-35.1-35.1zM561.5 149.6c0 23.4-15.6 43.3-36.9 49.7v44.9h-30v-44.9c-21.4-6.5-36.9-26.3-36.9-49.7 0-28.6 23.3-51.9 51.9-51.9s51.9 23.3 51.9 51.9z"></path>
+            </svg>`;
+          row.appendChild(avatar);
+        }
+
         const messagediv = document.createElement("div");
         messagediv.classList.add('message', isUser ? "user-message" : "bot-message");
-        if (isThinking) messagediv.classList.add("thinking");
 
         const messagetext = document.createElement('p');
         messagetext.classList.add("message-text");
-        messagetext.textContent = message;
+
+        if (isThinking) {
+          messagetext.innerHTML = `
+            <div class="thinking-indicator">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>`;
+        } else {
+          messagetext.textContent = message;
+        }
 
         const timestamp = document.createElement('span');
         timestamp.classList.add('time-stamp');
@@ -174,115 +303,114 @@ document.addEventListener('DOMContentLoaded', () => {
 
         messagediv.appendChild(messagetext);
         messagediv.appendChild(timestamp);
+        row.appendChild(messagediv);
 
-        chatmessage.appendChild(messagediv);
+        chatmessage.appendChild(row);
         chatmessage.scrollTop = chatmessage.scrollHeight;
-        return messagediv; // so AI can update it later
-    }
+        return messagetext;
+      }
 
-    // Function to get the bot response
-    function getbotresponse(usermessage) {
+      function getbotresponse(usermessage) {
         const lowermessage = usermessage.toLowerCase().trim();
 
-        // Clear chat feature
         if (lowermessage === "clear") {
-            chatmessage.innerHTML = ""; 
-            addmessage("Chat cleared ✅", false);
-            return null; 
+          chatmessage.innerHTML = ""; 
+          addmessage("Chat cleared ✅", false);
+          return null; 
         }
 
-        // Time feature
         if (lowermessage === "time") {
-            return "⏰ Current Date & Time: " + getCurrentTime();
+          return "⏰ Current Date & Time: " + getCurrentTime();
         }
-     if (lowermessage === "stop") {
-            stopAll();
-            return null;
+
+        if(lowermessage==="stop"){
+          stopAll();
+          return null;
         }
-        // Rule-based responses
+
         for (const [key, value] of Object.entries(botresponses)) {
-            if (lowermessage.includes(key)) {
-                return value;
-            }
+          if (lowermessage.includes(key)) {
+            return value;
+          }
         }
-        return botresponses.default; // null → fallback to AI
-    }
+        return botresponses.default;
+      }
 
-    // 🔹 AI Response via Gemini API
-    const generateBotResponse = async (incomingMessageDiv, userMessage) => {
-        const messageElement = incomingMessageDiv.querySelector(".message-text");
+      function stopAll() {
+        speechSynthesis.cancel();
+        if (currentAbortController) {
+          currentAbortController.abort();
+          currentAbortController = null;
+        }
+        addmessage("⏹️ Stopped generating & speaking", false);
+      }
 
+      const generateBotResponse = async (messageElement, userMessage) => {
         const requestOptions = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: userMessage }] }]
-            })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: userMessage }] }]
+          })
         };
 
         try {
-            const response = await fetch(API_URL, requestOptions);
-            const data = await response.json();
+          const response = await fetch(API_URL, requestOptions);
+          const data = await response.json();
 
-            if (!response.ok) throw new Error(data.error?.message || "API request failed");
+          if (!response.ok) throw new Error(data.error?.message || "API request failed");
 
-            const apiResponseText = data.candidates[0].content.parts[0].text
-                .replace(/\*\*(.*?)\*\*/g, "$1")
-                .trim();
+          const apiResponseText = data.candidates[0].content.parts[0].text
+            .replace(/\*\*(.*?)\*\*/g, "$1")
+            .trim();
 
-            messageElement.textContent = apiResponseText;
-            speak(apiResponseText);
+          messageElement.textContent = apiResponseText;
+          speak(apiResponseText);
 
         } catch(error) {
-            console.log(error);
-            messageElement.textContent = "❌ Sorry, I encountered an error. Please try again.";
-        } finally {
-            incomingMessageDiv.classList.remove("thinking");
+          console.log(error);
+          messageElement.textContent = "❌ Sorry, I encountered an error. Please try again.";
         }
-    };
-// Function to make the bot speak
-function speak(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";  // You can change to "ta-IN" for Tamil, etc.
-    utterance.rate = 1;        // Speed (0.5 = slow, 1 = normal, 1.5 = fast)
-    utterance.pitch = 1;       // Tone (0 = low, 2 = high)
-    speechSynthesis.speak(utterance);
-}
+      };
 
-    // Function to handle sending messages
-    function sendmessage() {
+      function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        speechSynthesis.speak(utterance);
+      }
+
+      function sendmessage() {
         const message = userinput.value.trim();
         if (message) {
-            addmessage(message, true);
-            userinput.value = "";
+          addmessage(message, true);
+          userinput.value = "";
 
-            setTimeout(() => {
-                const botresponse = getbotresponse(message);
-                if (botresponse) {
-                    addmessage(botresponse);
-                    speak(botresponse)
-                } else {
-                    // AI fallback
-                    const thinkingDiv = addmessage("Thinking...", false, true);
-                    generateBotResponse(thinkingDiv, message);
-                }
-            }, 500);
+          setTimeout(() => {
+            const botresponse = getbotresponse(message);
+            if (botresponse) {
+              addmessage(botresponse);
+              speak(botresponse);
+            } else {
+              const thinkingText = addmessage("", false, true);
+              generateBotResponse(thinkingText, message);
+            }
+          }, 500);
         }
-    }
+      }
 
-    sendbutton.addEventListener('click', sendmessage);
+      sendbutton.addEventListener('click', sendmessage);
 
-    userinput.addEventListener("keypress", (e) => {
+      userinput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
-            sendmessage();
+          sendmessage();
         }
+      });
+
+      const firstMsg = document.querySelector('.bot-message .time-stamp');
+      if (firstMsg) firstMsg.textContent = getCurrentTime();
     });
-
-    // Add timestamp to initial bot message
-    const firstMsg = document.querySelector('.bot-message .time-stamp');
-    if (firstMsg) firstMsg.textContent = getCurrentTime();
-});
-</script>
-
+  </script>
 </body>
 </html>
